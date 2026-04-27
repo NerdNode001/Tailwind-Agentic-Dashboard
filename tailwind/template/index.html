@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind Agentic • TradingWorkspace</title>
+
+  <!-- Tailwind CSS v4 -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <!-- Markdown renderer -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── BASE THEME (HIGH CONTRAST DESKTOP/MOBILE) ── */
+    body { 
+      font-family: 'DM Sans', sans-serif; 
+      background-color: #060608; /* Far darker background for absolute contrast */
+      color: #f4f4f5; 
+      margin: 0; 
+    }
+    
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* ── GLASSMORPHISM (ACCENTS ONLY) ── */
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 9999px;
+    }
+
+    .glass-panel {
+      background: rgba(18, 18, 20, 0.6);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    /* ── SOLID CARDS (FOR EXTENDED READING) ── */
+    .solid-panel {
+      background: #09090b; /* Pure zinc-950, no blur, opaque for reading */
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+    }
+
+    /* ── BUTTON INTERACTIONS ── */
+    .btn-grok {
+      background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+      color: #000;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2);
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .btn-grok:hover:not(:disabled) {
+      box-shadow: 0 4px 20px rgba(6, 182, 212, 0.5);
+      transform: translateY(-1px);
+    }
+    .btn-grok:disabled {
+      background: #27272a;
+      box-shadow: none;
+      color: #71717a;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── SCROLLBARS ── */
+    .scroll-area { overflow-y: auto; overflow-x: hidden; }
+    .scroll-area::-webkit-scrollbar { width: 6px; }
+    .scroll-area::-webkit-scrollbar-track { background: transparent; }
+    .scroll-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    .scroll-area::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+
+    .terminal-window {
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      box-shadow: inset 0 4px 15px rgba(0,0,0,0.8);
+    }
+
+    /* ── ANIMATIONS ── */
+    .node-indicator { transition: all 0.3s ease; }
+    .node-indicator.active { color: #34d399; text-shadow: 0 0 12px rgba(52,211,153,0.6); }
+    
+    @keyframes slideRight { 
+      from { opacity: 0; transform: translateX(-10px); } 
+      to { opacity: 1; transform: translateX(0); } 
+    }
+    .log-line { animation: slideRight 0.3s ease-out forwards; }
+
+    /* ── RESULT PARSING ── */
+    .result-content h1 { font-size: 1.7rem; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; margin-top: 1.5em; margin-bottom: 0.5em; color: #fff; }
+    .result-content h2 { font-size: 1.3rem; font-weight: 600; color: #34d399; margin-top: 1.5em; margin-bottom: 0.5em;}
+    .result-content p { color: #d4d4d8; line-height: 1.7; margin-bottom: 1rem; }
+    .result-content ul { list-style-type: none; padding-left: 0; margin-bottom: 1rem; }
+    .result-content li { position: relative; padding-left: 1.25rem; margin-bottom: 0.5rem; color: #e4e4e7; line-height: 1.5; }
+    .result-content li::before { content: '▪'; font-size: 0.8rem; position: absolute; left: 0; top: 0.2rem; color: #06b6d4; }
+    .result-content strong { color: #fff; font-weight: 700; }
+  </style>
+</head>
+
+<!-- FIX #4: Mobile scrolling restored. h-screen layout is strictly locked on desktop (lg:) -->
+<body class="min-h-screen lg:h-screen w-full flex flex-col relative overflow-x-hidden lg:overflow-hidden">
+
+  <!-- FIX #1: Restrained ambient background strictly behind content, not overlaying -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-emerald-700/10 rounded-full blur-[120px] pointer-events-none z-[-1]"></div>
+
+  <!-- ════════════ FLOATING GROK-STYLE NAV ════════════ -->
+  <nav class="w-[95%] max-w-7xl mx-auto mt-4 px-6 py-3 glass-pill flex flex-col sm:flex-row justify-between items-center gap-4 z-50 shrink-0">
+    <div class="flex items-center gap-3">
+      <span class="w-8 h-8 rounded-full bg-zinc-200 flex items-center justify-center text-teal-900 text-[15px]">
+        <i class="fa-solid fa-chart-line"></i>
+      </span>
+      <span class="text-xl font-bold tracking-tight text-white">Agentic<span class="font-normal text-emerald-400">Workspace</span></span>
+    </div>
+
+    <div class="hidden md:flex gap-6 text-[13px] font-semibold text-zinc-400">
+      <a href="#" class="hover:text-white transition">Markets <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i></a>
+      <a href="#" class="hover:text-white transition">Agents <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i></a>
+      <a href="#" class="hover:text-white transition">Backtests <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i></a>
+    </div>
+
+    <div class="flex gap-3">
+      <button class="px-5 py-2 rounded-full border border-white/10 text-xs font-semibold text-zinc-300 hover:bg-white/5 transition">Log in</button>
+      <button class="btn-grok px-6 py-2 rounded-full text-xs font-bold uppercase tracking-wide">Enter Platform</button>
+    </div>
+  </nav>
+
+  <!-- ════════════ TRADINGVIEW WORKSPACE ════════════ -->
+  <div class="flex-1 flex flex-col md:flex-row w-full p-4 gap-4 mt-2 overflow-hidden mx-auto max-w-[1600px] z-10 shrink-0 lg:shrink">
+    
+    <!-- ── LEFT SIDEBAR (Toolbox) ── -->
+    <aside class="w-full md:w-16 glass-panel flex flex-row md:flex-col items-center justify-center md:justify-start py-4 md:py-6 px-4 md:px-0 gap-6 z-10 shrink-0">
+      <button class="w-10 h-10 rounded-xl bg-white/10 text-white hover:bg-emerald-500 hover:text-black transition flex items-center justify-center cursor-pointer" title="Dashboard">
+        <i class="fa-brands fa-mendeley text-lg"></i>
+      </button>
+      <button class="w-10 h-10 rounded-xl text-zinc-500 hover:bg-white/5 hover:text-white transition flex items-center justify-center cursor-pointer md:mb-auto" title="Market Screener">
+        <i class="fa-solid fa-list text-lg"></i>
+      </button>
+      <button class="w-10 h-10 rounded-full text-zinc-500 hover:text-white transition flex items-center justify-center cursor-pointer mt-auto hidden md:flex" title="Settings">
+        <i class="fa-solid fa-gear"></i>
+      </button>
+      <div class="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 border border-white/20 hidden md:block" title="User Profile"></div>
+    </aside>
+
+    <!-- ── MAIN CHART/DATA AREA ── -->
+    <main class="flex-1 flex flex-col gap-4 overflow-hidden z-10">
+      
+      <!-- Top Toolbar (Input Form) -->
+      <header class="glass-panel px-5 py-3 shrink-0 flex items-center gap-4">
+        <div class="bg-black/40 w-10 h-10 rounded-lg flex items-center justify-center text-teal-500 border border-white/5 shrink-0">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <form id="agentForm" class="flex-1 flex flex-col sm:flex-row items-center gap-4 h-auto sm:h-10">
+          <input id="topic" type="text" 
+            placeholder="Search Target Sector (e.g., emerging AI infrastructure 2026)..." 
+            class="flex-1 w-full h-10 sm:h-full bg-transparent text-white font-medium outline-none placeholder-zinc-500 text-sm md:text-base border-b sm:border-none border-white/10" autocomplete="off">
+          
+          <button id="submitBtn" type="submit" class="btn-grok w-full sm:w-auto px-6 md:px-8 h-10 rounded-xl text-[13px] uppercase font-bold tracking-widest flex items-center justify-center gap-2 shrink-0">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Execute</span>
+          </button>
+        </form>
+      </header>
+
+      <!-- Dynamic Grid Layout -->
+      <!-- FIX #4: Mobile layout stacks naturally, Desktop uses locked h-full -->
+      <div class="flex-1 flex flex-col lg:flex-row gap-4 h-[1200px] lg:h-auto overflow-hidden">
+        
+        <!-- MODULE 1: Live Pipeline & Logs (Left) -->
+        <div class="w-full lg:w-[32%] glass-panel flex flex-col p-5 gap-5 shrink-0 h-[450px] lg:h-full">
+          
+          <!-- Heading & Progress -->
+          <div class="flex justify-between items-center text-xs uppercase tracking-widest font-bold text-teal-400 border-b border-white/5 pb-2 shrink-0">
+            <span class="flex items-center gap-2"><i class="fa-solid fa-microchip"></i> System Architecture</span>
+            <span id="progressBarData">0%</span>
+          </div>
+
+          <div class="h-1.5 w-full bg-black/50 rounded-full overflow-hidden shrink-0">
+            <div id="progressBar" class="h-full bg-gradient-to-r from-teal-500 to-emerald-400 transition-all duration-300 ease-out" style="width:0%"></div>
+          </div>
+
+          <!-- FIX #2: Vertical Chronological Nodes instead of cramped horizontal array -->
+          <div class="flex flex-col gap-4 shrink-0 py-2">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-circle text-[8px] text-zinc-700 node-indicator" id="ind-0"></i>
+              <div class="flex flex-col leading-tight">
+                <span class="text-xs font-bold text-zinc-300 uppercase tracking-widest">Stage 1: Scout</span>
+                <span class="text-[10px] text-zinc-500">Discover market candidates</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-circle text-[8px] text-zinc-700 node-indicator" id="ind-1"></i>
+              <div class="flex flex-col leading-tight">
+                <span class="text-xs font-bold text-zinc-300 uppercase tracking-widest">Stage 2: Catalyst</span>
+                <span class="text-[10px] text-zinc-500">Map structural tailwinds</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-circle text-[8px] text-zinc-700 node-indicator" id="ind-2"></i>
+              <div class="flex flex-col leading-tight">
+                <span class="text-xs font-bold text-zinc-300 uppercase tracking-widest">Stage 3: Risk Filter</span>
+                <span class="text-[10px] text-zinc-500">Qualify thesis dangers</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-circle text-[8px] text-zinc-700 node-indicator" id="ind-3"></i>
+              <div class="flex flex-col leading-tight">
+                <span class="text-xs font-bold text-zinc-300 uppercase tracking-widest">Stage 4: Valuation</span>
+                <span class="text-[10px] text-zinc-500">Check base multiples</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-circle text-[8px] text-zinc-700 node-indicator" id="ind-4"></i>
+              <div class="flex flex-col leading-tight">
+                <span class="text-xs font-bold text-zinc-300 uppercase tracking-widest">Stage 5: Reporting</span>
+                <span class="text-[10px] text-zinc-500">Compile target memo</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terminal / Feed -->
+          <div class="terminal-window flex-1 p-4 flex flex-col justify-end gap-2 overflow-hidden relative">
+            <div class="flex justify-between items-center mb-auto pt-1 pb-2 border-b border-white/10 shrink-0">
+              <span class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Execution Log</span>
+              <span id="elapsed" class="text-[10px] text-zinc-500 font-mono">00:00</span>
+            </div>
+            
+            <div id="agentFeed" class="scroll-area font-mono flex flex-col w-full h-full max-h-full justify-end text-zinc-300 pt-2">
+              <div class="text-zinc-600 text-xs italic">SYSTEM IDLE... Enter query.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODULE 2: The "Chart" (Final Memo Canvas) -->
+        <!-- FIX #5: Solid opaque panel (bg-[#09090b]) to prevent reading fatigue over glass -->
+        <div class="w-full lg:w-[68%] solid-panel flex flex-col p-1 overflow-hidden h-[700px] lg:h-full relative shrink-0 lg:shrink">
+          
+          <!-- Top Sub-Nav in panel -->
+          <div class="h-12 border-b border-zinc-800 flex items-center px-6 justify-between bg-[#121215] rounded-t-2xl z-10 shrink-0">
+            <div class="flex gap-6 text-[11px] uppercase tracking-widest font-semibold text-zinc-500 h-full">
+              <button class="text-white border-b border-emerald-400 pb-[10px] translate-y-[11px]">Primary Analysis</button>
+              <button class="hover:text-zinc-300 transition h-full">Raw Data Dump</button>
+            </div>
+            <div class="flex gap-4">
+              <button class="text-zinc-500 hover:text-white transition"><i class="fa-regular fa-copy"></i></button>
+              <button class="text-zinc-500 hover:text-white transition"><i class="fa-solid fa-expand"></i></button>
+            </div>
+          </div>
+
+          <!-- Result Container -->
+          <div id="resultBox" class="flex-1 scroll-area p-8 lg:p-10 relative z-10 w-full h-full">
+            
+            <div id="resultContent" class="hidden">
+              <div id="result" class="result-content w-full max-w-4xl mx-auto"></div>
+            </div>
+
+            <!-- FIX #6: Professional structure icon (fa-diagram-project) instead of Hubspot -->
+            <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-zinc-600 z-0">
+               <i class="fa-solid fa-diagram-project text-5xl mb-5 opacity-20"></i>
+               <p class="text-sm font-medium tracking-wide">Awaiting initialization block...</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+
+  <!-- ════════════ JAVASCRIPT LOGIC ════════════ -->
+  <script>
+    const form            = document.getElementById('agentForm');
+    const submitBtn       = document.getElementById('submitBtn');
+    const topicInput      = document.getElementById('topic');
+    const progressBar     = document.getElementById('progressBar');
+    const progressBarData = document.getElementById('progressBarData');
+    const agentFeed       = document.getElementById('agentFeed');
+    const resultBox       = document.getElementById('resultBox');
+    const result          = document.getElementById('result');
+    const resultContent   = document.getElementById('resultContent');
+    const emptyState      = document.getElementById('emptyState');
+    const elapsedEl       = document.getElementById('elapsed');
+
+    let timerInterval;
+    let startTime;
+
+    function updateTimer() {
+      const secs = Math.floor((Date.now() - startTime) / 1000);
+      const m = String(Math.floor(secs / 60)).padStart(2, '0');
+      const s = String(secs % 60).padStart(2, '0');
+      elapsedEl.textContent = `${m}:${s}`;
+    }
+
+    function updateNodeGrid(activeIdx) {
+      for (let i = 0; i < 5; i++) {
+        const ind = document.getElementById(`ind-${i}`);
+        if (i === activeIdx) {
+          ind.classList.add('active');
+          ind.classList.replace('text-zinc-700', 'text-teal-400');
+          ind.nextElementSibling.querySelector('span:first-child').classList.add('text-teal-400');
+        } else if (i < activeIdx) {
+          ind.classList.remove('active');
+          ind.classList.replace('text-zinc-700', 'text-emerald-700'); 
+          ind.classList.replace('text-teal-400', 'text-emerald-700'); 
+          ind.nextElementSibling.querySelector('span:first-child').classList.remove('text-teal-400');
+        } else {
+          ind.classList.remove('active');
+          ind.className = 'fa-solid fa-circle text-[8px] text-zinc-700 node-indicator';
+        }
+      }
+    }
+
+    function resetNodeGrid() {
+      for (let i = 0; i < 5; i++) {
+        const ind = document.getElementById(`ind-${i}`);
+        ind.className = 'fa-solid fa-circle text-[8px] text-zinc-700 node-indicator';
+        ind.nextElementSibling.querySelector('span:first-child').classList.remove('text-teal-400');
+      }
+    }
+
+    // FIX #3: Dimmed the Tag Prefix to zinc-600, highlighted Payload to white
+    function appendTerminalLine(msg, agentIdx) {
+      const names = ["SYS.SCOUT", "SYS.CATALYST", "SYS.RISK", "SYS.EVAL", "SYS.REPORT"];
+      const prefix = agentIdx >= 0 && agentIdx < 5 ? `[${names[agentIdx]}]` : `[SYSTEM]`;
+      
+      const line = document.createElement('div');
+      line.className = 'flex gap-2 log-line pb-2 mt-1';
+      
+      const pSpan = document.createElement('span');
+      pSpan.className = 'text-zinc-600 font-bold shrink-0 min-w-[75px] text-[10px] pt-[2px]';
+      pSpan.textContent = prefix;
+
+      const mSpan = document.createElement('span');
+      mSpan.className = 'text-white text-[11px] leading-snug break-words';
+      mSpan.textContent = msg;
+
+      line.appendChild(pSpan);
+      line.appendChild(mSpan);
+      agentFeed.appendChild(line);
+
+      // Lock to 8 lines to prevent massive overflow, auto-scroll bottom
+      while (agentFeed.children.length > 8) {
+        agentFeed.removeChild(agentFeed.firstChild);
+      }
+      agentFeed.parentElement.scrollTop = agentFeed.parentElement.scrollHeight;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const topic = topicInput.value.trim();
+      if (!topic) return;
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+      topicInput.disabled = true;
+
+      emptyState.classList.add('hidden');
+      resultContent.classList.add('hidden');
+      result.innerHTML = '';
+      agentFeed.innerHTML = ''; 
+      
+      progressBar.style.width = '0%';
+      progressBarData.textContent = '0%';
+      // Bug #5 fix: Reset progress bar color after a previous failure
+      progressBar.classList.replace('from-rose-600', 'from-teal-500');
+      progressBar.classList.replace('to-red-500', 'to-emerald-400');
+      resetNodeGrid();
+
+      startTime = Date.now();
+      clearInterval(timerInterval);
+      timerInterval = setInterval(updateTimer, 1000);
+      updateTimer();
+
+      try {
+        appendTerminalLine('Dispatching agentic routine...', -1);
+        const res = await fetch('/run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic })
+        });
+        
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const { job_id: jobId } = await res.json();
+        let lastReportedProg = -1;
+
+        let pollErrors = 0; // Bug #7 fix: track consecutive poll failures
+        const poll = setInterval(async () => {
+          try {
+            const statusRes = await fetch(`/status/${jobId}`);
+            const data = await statusRes.json();
+            pollErrors = 0; // Reset on success
+
+            if (data.status === 'running') {
+              progressBar.style.width = data.progress + '%';
+              progressBarData.textContent = data.progress + '%';
+              
+              const idx = (data.agent_index !== undefined) ? data.agent_index : Math.min(Math.floor(data.progress / 20), 4);
+              updateNodeGrid(idx);
+
+              if (data.progress > lastReportedProg) {
+                appendTerminalLine(data.message || 'Fetching sequence block...', idx);
+                lastReportedProg = data.progress;
+              }
+            } 
+            else if (data.status === 'completed') {
+              clearInterval(poll);
+              clearInterval(timerInterval);
+              
+              progressBar.style.width = '100%';
+              progressBarData.textContent = '100%';
+              // Bug #6 fix: Mark all 5 nodes as completed instead of OOB index
+              for (let i = 0; i < 5; i++) {
+                const ind = document.getElementById(`ind-${i}`);
+                ind.classList.remove('active');
+                ind.className = 'fa-solid fa-circle text-[8px] text-emerald-400 node-indicator';
+                ind.nextElementSibling.querySelector('span:first-child').classList.remove('text-teal-400');
+              }
+              appendTerminalLine('Output payload delivered.', -1);
+
+              submitBtn.disabled = false;
+              topicInput.disabled = false;
+              submitBtn.innerHTML = '<i class="fa-solid fa-bolt"></i><span>Execute</span>';
+              topicInput.value = '';
+
+              resultContent.classList.remove('hidden');
+              result.innerHTML = marked.parse(data.result);
+              resultBox.scrollTop = 0;
+            } 
+            else if (data.status === 'failed') {
+              clearInterval(poll);
+              clearInterval(timerInterval);
+              
+              progressBar.classList.replace('from-teal-500', 'from-rose-600');
+              progressBar.classList.replace('to-emerald-400', 'to-red-500');
+              
+              appendTerminalLine('Process failed: ' + (data.message || 'Unknown'), -1);
+
+              submitBtn.disabled = false;
+              topicInput.disabled = false;
+              submitBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i><span>Retry</span>';
+              
+              if (data.result) {
+                resultContent.classList.remove('hidden');
+                result.innerHTML = marked.parse(data.result);
+              } else {
+                emptyState.classList.remove('hidden');
+                emptyState.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-rose-500 text-5xl mb-4"></i><p>Execution halted.</p>';
+              }
+            }
+          } catch(err) {
+            pollErrors++;
+            if (pollErrors >= 5) {
+              clearInterval(poll);
+              clearInterval(timerInterval);
+              appendTerminalLine('Lost connection to server after 5 retries.', -1);
+              submitBtn.disabled = false;
+              topicInput.disabled = false;
+              submitBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i><span>Retry</span>';
+              emptyState.classList.remove('hidden');
+              emptyState.innerHTML = '<i class="fa-solid fa-plug-circle-xmark text-rose-500 text-5xl mb-4"></i><p>Connection lost.</p>';
+            }
+          }
+        }, 2000); 
+
+      } catch (err) {
+        clearInterval(timerInterval);
+        appendTerminalLine('Connection rejected at node.', -1);
+        
+        submitBtn.disabled = false;
+        topicInput.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i><span>Retry</span>';
+        
+        emptyState.classList.remove('hidden');
+        emptyState.innerHTML = '<i class="fa-solid fa-plug-circle-xmark text-rose-500 text-5xl mb-4"></i><p>Offline.</p>';
+      }
+    });
+
+  </script>
+</body>
+</html>
