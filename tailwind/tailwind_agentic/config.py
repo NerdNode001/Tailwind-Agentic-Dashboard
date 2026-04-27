@@ -6,9 +6,9 @@ from crewai import LLM
 load_dotenv(dotenv_path=Path(__file__).resolve().parent.parent / ".env")
 
 # Powers ALL 5 agents.
-# groq/llama3-70b-8192 is fast and free-tier friendly.
+# groq/llama-3.1-8b-instant is the replacement for the deprecated llama3-8b-8192.
 # Needs GROQ_API_KEY set in .env (get one free at https://console.groq.com)
 llm = LLM(
-    model="groq/llama3-8b-8192",
+    model="groq/llama-3.1-8b-instant",
     temperature=0.3,   # Low = more consistent, factual answers
 )
