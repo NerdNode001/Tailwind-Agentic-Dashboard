@@ -3,488 +3,1041 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tailwind Agentic • TradingWorkspace</title>
+  <title>Tailwind Agentic • Institutional Research Platform</title>
+  <meta name="description" content="AI-powered institutional-grade market research and analysis platform. Multi-agent deep research for portfolio construction and risk assessment.">
 
-  <!-- Tailwind CSS v4 -->
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <!-- Markdown renderer -->
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Markdown renderer -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <style>
-    /* ── BASE THEME (HIGH CONTRAST DESKTOP/MOBILE) ── */
-    body { 
-      font-family: 'DM Sans', sans-serif; 
-      background-color: #060608; /* Far darker background for absolute contrast */
-      color: #f4f4f5; 
-      margin: 0; 
-    }
-    
-    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    /* ═══════════════════════════════════════════════════════════════
+       DESIGN SYSTEM — Wall Street × Silicon Valley
+       ═══════════════════════════════════════════════════════════════ */
 
-    /* ── GLASSMORPHISM (ACCENTS ONLY) ── */
-    .glass-pill {
-      background: rgba(255, 255, 255, 0.05);
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary:   #07070a;
+      --bg-surface:   #0c0c10;
+      --bg-elevated:  #111116;
+      --bg-hover:     #16161d;
+      --border-subtle: rgba(255,255,255,0.06);
+      --border-medium: rgba(255,255,255,0.10);
+      --text-primary:  #f0f0f2;
+      --text-secondary:#a0a0ab;
+      --text-tertiary: #5a5a68;
+      --accent:        #34d399;
+      --accent-dim:    rgba(52,211,153,0.12);
+      --accent-glow:   rgba(52,211,153,0.25);
+      --gradient-start:#10b981;
+      --gradient-end:  #06b6d4;
+      --negative:      #f43f5e;
+      --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono:    'JetBrains Mono', 'SF Mono', monospace;
+      --radius-sm:    8px;
+      --radius-md:    12px;
+      --radius-lg:    16px;
+      --radius-xl:    24px;
+      --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    /* ── Ambient Background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(16,185,129,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Typography ── */
+    .font-mono { font-family: var(--font-mono); }
+    .text-gradient {
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.16); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       HEADER / NAV
+       ═══════════════════════════════════════════════════════════════ */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 56px;
+      background: rgba(7,7,10,0.85);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 9999px;
+      border-bottom: 1px solid var(--border-subtle);
     }
 
-    .glass-panel {
-      background: rgba(18, 18, 20, 0.6);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.3px;
+      color: var(--text-primary);
     }
-
-    /* ── SOLID CARDS (FOR EXTENDED READING) ── */
-    .solid-panel {
-      background: #09090b; /* Pure zinc-950, no blur, opaque for reading */
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
-    }
-
-    /* ── BUTTON INTERACTIONS ── */
-    .btn-grok {
-      background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
       color: #000;
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2);
-      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      font-weight: 800;
     }
-    .btn-grok:hover:not(:disabled) {
-      box-shadow: 0 4px 20px rgba(6, 182, 212, 0.5);
-      transform: translateY(-1px);
+    .logo span { color: var(--text-tertiary); font-weight: 400; }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
     }
-    .btn-grok:disabled {
-      background: #27272a;
-      box-shadow: none;
-      color: #71717a;
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      text-decoration: none;
+      letter-spacing: 0.2px;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a:hover { color: var(--text-secondary); }
+    .nav-links a.active {
+      color: var(--text-primary);
+    }
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -18px;
+      left: 0; right: 0;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 100px;
+      background: var(--accent-dim);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       MAIN CONTENT
+       ═══════════════════════════════════════════════════════════════ */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       STATE: IDLE — Query Input
+       ═══════════════════════════════════════════════════════════════ */
+    .input-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-bottom: 12vh;
+      transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out);
+    }
+    .input-state.hidden {
+      opacity: 0;
+      transform: translateY(-20px);
+      pointer-events: none;
+      position: absolute;
+    }
+
+    .hero-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero-label::before, .hero-label::after {
+      content: '';
+      width: 20px;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.3;
+    }
+
+    .hero-title {
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      text-align: center;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .hero-subtitle {
+      font-size: 15px;
+      color: var(--text-tertiary);
+      text-align: center;
+      max-width: 480px;
+      line-height: 1.6;
+      margin-bottom: 40px;
+      font-weight: 400;
+    }
+
+    /* Search Input */
+    .search-container {
+      width: 100%;
+      max-width: 640px;
+      position: relative;
+    }
+    .search-input {
+      width: 100%;
+      height: 56px;
+      padding: 0 140px 0 20px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-medium);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 400;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .search-input::placeholder {
+      color: var(--text-tertiary);
+      font-weight: 400;
+    }
+    .search-input:focus {
+      border-color: rgba(52,211,153,0.4);
+      box-shadow: 0 0 0 3px rgba(52,211,153,0.08);
+    }
+    .search-submit {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 42px;
+      padding: 0 24px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      color: #000;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s var(--ease-spring);
+    }
+    .search-submit:hover { opacity: 0.9; transform: translateY(-50%) scale(1.02); }
+    .search-submit:active { transform: translateY(-50%) scale(0.98); }
+    .search-submit:disabled {
+      background: var(--bg-hover);
+      color: var(--text-tertiary);
       cursor: not-allowed;
-      transform: none;
+      opacity: 1;
     }
 
-    /* ── SCROLLBARS ── */
-    .scroll-area { overflow-y: auto; overflow-x: hidden; }
-    .scroll-area::-webkit-scrollbar { width: 6px; }
-    .scroll-area::-webkit-scrollbar-track { background: transparent; }
-    .scroll-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-    .scroll-area::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
-
-    .terminal-window {
-      background: #000;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      box-shadow: inset 0 4px 15px rgba(0,0,0,0.8);
+    .input-hints {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+      justify-content: center;
+    }
+    .hint-chip {
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-tertiary);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-sans);
+    }
+    .hint-chip:hover {
+      border-color: var(--border-medium);
+      color: var(--text-secondary);
+      background: var(--bg-hover);
     }
 
-    /* ── ANIMATIONS ── */
-    .node-indicator { transition: all 0.3s ease; }
-    .node-indicator.active { color: #34d399; text-shadow: 0 0 12px rgba(52,211,153,0.6); }
-    
-    @keyframes slideRight { 
-      from { opacity: 0; transform: translateX(-10px); } 
-      to { opacity: 1; transform: translateX(0); } 
+    /* ═══════════════════════════════════════════════════════════════
+       STATE: THINKING — Animated Loader
+       ═══════════════════════════════════════════════════════════════ */
+    .thinking-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-bottom: 12vh;
+      transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
     }
-    .log-line { animation: slideRight 0.3s ease-out forwards; }
+    .thinking-state.hidden {
+      opacity: 0;
+      transform: scale(0.96);
+      pointer-events: none;
+      position: absolute;
+    }
 
-    /* ── RESULT PARSING ── */
-    .result-content h1 { font-size: 1.7rem; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; margin-top: 1.5em; margin-bottom: 0.5em; color: #fff; }
-    .result-content h2 { font-size: 1.3rem; font-weight: 600; color: #34d399; margin-top: 1.5em; margin-bottom: 0.5em;}
-    .result-content p { color: #d4d4d8; line-height: 1.7; margin-bottom: 1rem; }
-    .result-content ul { list-style-type: none; padding-left: 0; margin-bottom: 1rem; }
-    .result-content li { position: relative; padding-left: 1.25rem; margin-bottom: 0.5rem; color: #e4e4e7; line-height: 1.5; }
-    .result-content li::before { content: '▪'; font-size: 0.8rem; position: absolute; left: 0; top: 0.2rem; color: #06b6d4; }
-    .result-content strong { color: #fff; font-weight: 700; }
+    /* Orbital ring animation */
+    .thinking-orb {
+      width: 120px;
+      height: 120px;
+      position: relative;
+      margin-bottom: 40px;
+    }
+
+    .orbit-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid transparent;
+    }
+    .orbit-ring-1 {
+      border-top-color: var(--accent);
+      border-right-color: rgba(52,211,153,0.2);
+      animation: orbit 2.4s linear infinite;
+    }
+    .orbit-ring-2 {
+      inset: 14px;
+      border-bottom-color: rgba(6,182,212,0.6);
+      border-left-color: rgba(6,182,212,0.15);
+      animation: orbit 3.6s linear infinite reverse;
+    }
+    .orbit-ring-3 {
+      inset: 28px;
+      border-top-color: rgba(52,211,153,0.3);
+      animation: orbit 5s linear infinite;
+    }
+
+    @keyframes orbit { to { transform: rotate(360deg); } }
+
+    /* Center pulse */
+    .orbit-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow), 0 0 60px rgba(52,211,153,0.1);
+      animation: center-pulse 2s ease-in-out infinite;
+    }
+    @keyframes center-pulse {
+      0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+      50% { transform: translate(-50%,-50%) scale(1.5); opacity: 0.6; }
+    }
+
+    /* Floating dots */
+    .float-dots {
+      display: flex;
+      gap: 6px;
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .float-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: float-wave 1.4s ease-in-out infinite;
+    }
+    .float-dot:nth-child(2) { animation-delay: 0.15s; }
+    .float-dot:nth-child(3) { animation-delay: 0.3s; }
+    .float-dot:nth-child(4) { animation-delay: 0.45s; }
+    .float-dot:nth-child(5) { animation-delay: 0.6s; }
+
+    @keyframes float-wave {
+      0%, 100% { transform: translateY(0); opacity: 0.3; }
+      50% { transform: translateY(-10px); opacity: 1; }
+    }
+
+    .thinking-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.3px;
+      margin-bottom: 8px;
+    }
+    .thinking-sublabel {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-weight: 400;
+    }
+    .thinking-timer {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 24px;
+      padding: 6px 16px;
+      border-radius: 100px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       STATE: RESULT — Research Memo
+       ═══════════════════════════════════════════════════════════════ */
+    .result-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 40px 0 60px;
+      transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+    }
+    .result-state.hidden {
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+      position: absolute;
+    }
+
+    /* Result header */
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .result-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .result-meta-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .result-meta-sub {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    .result-meta-sub span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .result-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .result-action-btn {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .result-action-btn:hover {
+      border-color: var(--border-medium);
+      color: var(--text-secondary);
+      background: var(--bg-hover);
+    }
+
+    /* Result body — markdown content */
+    .result-body {
+      line-height: 1.8;
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+    .result-body h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+      margin: 2em 0 0.6em;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .result-body h1:first-child { margin-top: 0; }
+    .result-body h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.3px;
+      margin: 1.8em 0 0.5em;
+    }
+    .result-body h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 1.5em 0 0.4em;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .result-body p {
+      margin-bottom: 1em;
+      color: var(--text-secondary);
+    }
+    .result-body strong { color: var(--text-primary); font-weight: 600; }
+    .result-body ul, .result-body ol {
+      padding-left: 0;
+      list-style: none;
+      margin-bottom: 1.2em;
+    }
+    .result-body li {
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+    }
+    .result-body li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    .result-body code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      background: var(--bg-surface);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border-subtle);
+      color: var(--accent);
+    }
+    .result-body pre {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      overflow-x: auto;
+      margin: 1.2em 0;
+    }
+    .result-body pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--text-secondary);
+    }
+    .result-body blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 12px 20px;
+      margin: 1.2em 0;
+      background: var(--accent-dim);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      color: var(--text-secondary);
+      font-style: normal;
+    }
+    .result-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.2em 0;
+      font-size: 14px;
+    }
+    .result-body th {
+      text-align: left;
+      padding: 10px 16px;
+      border-bottom: 2px solid var(--border-medium);
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .result-body td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+    .result-body tr:hover td {
+      background: var(--bg-hover);
+    }
+
+    /* New research button */
+    .new-research-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 40px;
+      padding: 12px 28px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-medium);
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .new-research-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ERROR STATE
+       ═══════════════════════════════════════════════════════════════ */
+    .error-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      background: rgba(244,63,94,0.08);
+      border: 1px solid rgba(244,63,94,0.2);
+      color: var(--negative);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+    .error-banner.hidden { display: none; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════════════════════════ */
+    .footer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+    .footer-bar a {
+      color: var(--text-tertiary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-bar a:hover { color: var(--text-secondary); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .top-bar { padding: 0 16px; }
+      .nav-links { display: none; }
+      .main-content { padding: 0 16px; }
+      .search-input { padding-right: 110px; font-size: 14px; }
+      .search-submit { padding: 0 16px; font-size: 12px; }
+      .hero-title { font-size: 28px; }
+      .result-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .footer-bar { padding: 16px; flex-direction: column; gap: 8px; }
+      .input-hints { gap: 6px; }
+      .hint-chip { font-size: 11px; padding: 5px 10px; }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       TRANSITIONS & UTILITY
+       ═══════════════════════════════════════════════════════════════ */
+    .fade-in {
+      animation: fadeIn 0.5s var(--ease-out) forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 
-<!-- FIX #4: Mobile scrolling restored. h-screen layout is strictly locked on desktop (lg:) -->
-<body class="min-h-screen lg:h-screen w-full flex flex-col relative overflow-x-hidden lg:overflow-hidden">
+<body>
 
-  <!-- FIX #1: Restrained ambient background strictly behind content, not overlaying -->
-  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-emerald-700/10 rounded-full blur-[120px] pointer-events-none z-[-1]"></div>
-
-  <!-- ════════════ FLOATING GROK-STYLE NAV ════════════ -->
-  <nav class="w-[95%] max-w-7xl mx-auto mt-4 px-6 py-3 glass-pill flex flex-col sm:flex-row justify-between items-center gap-4 z-50 shrink-0">
-    <div class="flex items-center gap-3">
-      <span class="w-8 h-8 rounded-full bg-zinc-200 flex items-center justify-center text-teal-900 text-[15px]">
-        <i class="fa-solid fa-chart-line"></i>
-      </span>
-      <span class="text-xl font-bold tracking-tight text-white">Agentic<span class="font-normal text-emerald-400">Workspace</span></span>
+  <!-- ═══════════════ TOP BAR ═══════════════ -->
+  <header class="top-bar">
+    <div class="logo">
+      <div class="logo-icon">T</div>
+      Tailwind <span>Agentic</span>
     </div>
 
-    <div class="hidden md:flex gap-6 text-[13px] font-semibold text-zinc-400">
-      <a href="#" class="hover:text-white transition">Markets <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i></a>
-      <a href="#" class="hover:text-white transition">Agents <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i></a>
-      <a href="#" class="hover:text-white transition">Backtests <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i></a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#" class="active">Research</a></li>
+        <li><a href="#">Portfolio</a></li>
+        <li><a href="#">Risk</a></li>
+        <li><a href="#">Backtests</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        System Online
+      </div>
     </div>
+  </header>
 
-    <div class="flex gap-3">
-      <button class="px-5 py-2 rounded-full border border-white/10 text-xs font-semibold text-zinc-300 hover:bg-white/5 transition">Log in</button>
-      <button class="btn-grok px-6 py-2 rounded-full text-xs font-bold uppercase tracking-wide">Enter Platform</button>
-    </div>
-  </nav>
 
-  <!-- ════════════ TRADINGVIEW WORKSPACE ════════════ -->
-  <div class="flex-1 flex flex-col md:flex-row w-full p-4 gap-4 mt-2 overflow-hidden mx-auto max-w-[1600px] z-10 shrink-0 lg:shrink">
-    
-    <!-- ── LEFT SIDEBAR (Toolbox) ── -->
-    <aside class="w-full md:w-16 glass-panel flex flex-row md:flex-col items-center justify-center md:justify-start py-4 md:py-6 px-4 md:px-0 gap-6 z-10 shrink-0">
-      <button class="w-10 h-10 rounded-xl bg-white/10 text-white hover:bg-emerald-500 hover:text-black transition flex items-center justify-center cursor-pointer" title="Dashboard">
-        <i class="fa-brands fa-mendeley text-lg"></i>
-      </button>
-      <button class="w-10 h-10 rounded-xl text-zinc-500 hover:bg-white/5 hover:text-white transition flex items-center justify-center cursor-pointer md:mb-auto" title="Market Screener">
-        <i class="fa-solid fa-list text-lg"></i>
-      </button>
-      <button class="w-10 h-10 rounded-full text-zinc-500 hover:text-white transition flex items-center justify-center cursor-pointer mt-auto hidden md:flex" title="Settings">
-        <i class="fa-solid fa-gear"></i>
-      </button>
-      <div class="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 border border-white/20 hidden md:block" title="User Profile"></div>
-    </aside>
+  <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+  <div class="main-content">
 
-    <!-- ── MAIN CHART/DATA AREA ── -->
-    <main class="flex-1 flex flex-col gap-4 overflow-hidden z-10">
-      
-      <!-- Top Toolbar (Input Form) -->
-      <header class="glass-panel px-5 py-3 shrink-0 flex items-center gap-4">
-        <div class="bg-black/40 w-10 h-10 rounded-lg flex items-center justify-center text-teal-500 border border-white/5 shrink-0">
-          <i class="fa-solid fa-magnifying-glass"></i>
+    <!-- ── STATE 1: IDLE / INPUT ── -->
+    <section id="inputState" class="input-state">
+      <div class="hero-label">Institutional-Grade Research</div>
+      <h1 class="hero-title">Deep Market<br><span class="text-gradient">Intelligence</span></h1>
+      <p class="hero-subtitle">Five autonomous agents conduct multi-layered sector analysis, risk assessment, and portfolio construction in a single query.</p>
+
+      <form id="agentForm" class="search-container">
+        <input
+          id="topic"
+          type="text"
+          class="search-input"
+          placeholder="e.g. Emerging AI infrastructure plays 2026"
+          autocomplete="off"
+          required
+        >
+        <button id="submitBtn" type="submit" class="search-submit">Analyze</button>
+      </form>
+
+      <div class="input-hints">
+        <button type="button" class="hint-chip" data-query="AI semiconductor supply chain 2026">AI Semiconductors</button>
+        <button type="button" class="hint-chip" data-query="Nuclear energy renaissance small modular reactors">Nuclear SMRs</button>
+        <button type="button" class="hint-chip" data-query="Quantum computing enterprise adoption timeline">Quantum Computing</button>
+        <button type="button" class="hint-chip" data-query="Space economy commercial satellite operators">Space Economy</button>
+      </div>
+    </section>
+
+
+    <!-- ── STATE 2: THINKING ── -->
+    <section id="thinkingState" class="thinking-state hidden">
+      <div class="thinking-orb">
+        <div class="orbit-ring orbit-ring-1"></div>
+        <div class="orbit-ring orbit-ring-2"></div>
+        <div class="orbit-ring orbit-ring-3"></div>
+        <div class="orbit-center"></div>
+        <div class="float-dots">
+          <div class="float-dot"></div>
+          <div class="float-dot"></div>
+          <div class="float-dot"></div>
+          <div class="float-dot"></div>
+          <div class="float-dot"></div>
         </div>
-        <form id="agentForm" class="flex-1 flex flex-col sm:flex-row items-center gap-4 h-auto sm:h-10">
-          <input id="topic" type="text" 
-            placeholder="Search Target Sector (e.g., emerging AI infrastructure 2026)..." 
-            class="flex-1 w-full h-10 sm:h-full bg-transparent text-white font-medium outline-none placeholder-zinc-500 text-sm md:text-base border-b sm:border-none border-white/10" autocomplete="off">
-          
-          <button id="submitBtn" type="submit" class="btn-grok w-full sm:w-auto px-6 md:px-8 h-10 rounded-xl text-[13px] uppercase font-bold tracking-widest flex items-center justify-center gap-2 shrink-0">
-            <i class="fa-solid fa-bolt"></i>
-            <span>Execute</span>
-          </button>
-        </form>
-      </header>
+      </div>
+      <div class="thinking-label" id="thinkingLabel">Initializing research agents…</div>
+      <div class="thinking-sublabel" id="thinkingSublabel">Agents are scanning, analyzing, and synthesizing data</div>
+      <div class="thinking-timer" id="thinkingTimer">00:00</div>
+    </section>
 
-      <!-- Dynamic Grid Layout -->
-      <!-- FIX #4: Mobile layout stacks naturally, Desktop uses locked h-full -->
-      <div class="flex-1 flex flex-col lg:flex-row gap-4 h-[1200px] lg:h-auto overflow-hidden">
-        
-        <!-- MODULE 1: Live Pipeline & Logs (Left) -->
-        <div class="w-full lg:w-[32%] glass-panel flex flex-col p-5 gap-5 shrink-0 h-[450px] lg:h-full">
-          
-          <!-- Heading & Progress -->
-          <div class="flex justify-between items-center text-xs uppercase tracking-widest font-bold text-teal-400 border-b border-white/5 pb-2 shrink-0">
-            <span class="flex items-center gap-2"><i class="fa-solid fa-microchip"></i> System Architecture</span>
-            <span id="progressBarData">0%</span>
-          </div>
 
-          <div class="h-1.5 w-full bg-black/50 rounded-full overflow-hidden shrink-0">
-            <div id="progressBar" class="h-full bg-gradient-to-r from-teal-500 to-emerald-400 transition-all duration-300 ease-out" style="width:0%"></div>
-          </div>
+    <!-- ── STATE 3: RESULT ── -->
+    <section id="resultState" class="result-state hidden">
 
-          <!-- FIX #2: Vertical Chronological Nodes instead of cramped horizontal array -->
-          <div class="flex flex-col gap-4 shrink-0 py-2">
-            <div class="flex items-center gap-3">
-              <i class="fa-solid fa-circle text-[8px] text-zinc-700 node-indicator" id="ind-0"></i>
-              <div class="flex flex-col leading-tight">
-                <span class="text-xs font-bold text-zinc-300 uppercase tracking-widest">Stage 1: Scout</span>
-                <span class="text-[10px] text-zinc-500">Discover market candidates</span>
-              </div>
-            </div>
-            <div class="flex items-center gap-3">
-              <i class="fa-solid fa-circle text-[8px] text-zinc-700 node-indicator" id="ind-1"></i>
-              <div class="flex flex-col leading-tight">
-                <span class="text-xs font-bold text-zinc-300 uppercase tracking-widest">Stage 2: Catalyst</span>
-                <span class="text-[10px] text-zinc-500">Map structural tailwinds</span>
-              </div>
-            </div>
-            <div class="flex items-center gap-3">
-              <i class="fa-solid fa-circle text-[8px] text-zinc-700 node-indicator" id="ind-2"></i>
-              <div class="flex flex-col leading-tight">
-                <span class="text-xs font-bold text-zinc-300 uppercase tracking-widest">Stage 3: Risk Filter</span>
-                <span class="text-[10px] text-zinc-500">Qualify thesis dangers</span>
-              </div>
-            </div>
-            <div class="flex items-center gap-3">
-              <i class="fa-solid fa-circle text-[8px] text-zinc-700 node-indicator" id="ind-3"></i>
-              <div class="flex flex-col leading-tight">
-                <span class="text-xs font-bold text-zinc-300 uppercase tracking-widest">Stage 4: Valuation</span>
-                <span class="text-[10px] text-zinc-500">Check base multiples</span>
-              </div>
-            </div>
-            <div class="flex items-center gap-3">
-              <i class="fa-solid fa-circle text-[8px] text-zinc-700 node-indicator" id="ind-4"></i>
-              <div class="flex flex-col leading-tight">
-                <span class="text-xs font-bold text-zinc-300 uppercase tracking-widest">Stage 5: Reporting</span>
-                <span class="text-[10px] text-zinc-500">Compile target memo</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Terminal / Feed -->
-          <div class="terminal-window flex-1 p-4 flex flex-col justify-end gap-2 overflow-hidden relative">
-            <div class="flex justify-between items-center mb-auto pt-1 pb-2 border-b border-white/10 shrink-0">
-              <span class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Execution Log</span>
-              <span id="elapsed" class="text-[10px] text-zinc-500 font-mono">00:00</span>
-            </div>
-            
-            <div id="agentFeed" class="scroll-area font-mono flex flex-col w-full h-full max-h-full justify-end text-zinc-300 pt-2">
-              <div class="text-zinc-600 text-xs italic">SYSTEM IDLE... Enter query.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- MODULE 2: The "Chart" (Final Memo Canvas) -->
-        <!-- FIX #5: Solid opaque panel (bg-[#09090b]) to prevent reading fatigue over glass -->
-        <div class="w-full lg:w-[68%] solid-panel flex flex-col p-1 overflow-hidden h-[700px] lg:h-full relative shrink-0 lg:shrink">
-          
-          <!-- Top Sub-Nav in panel -->
-          <div class="h-12 border-b border-zinc-800 flex items-center px-6 justify-between bg-[#121215] rounded-t-2xl z-10 shrink-0">
-            <div class="flex gap-6 text-[11px] uppercase tracking-widest font-semibold text-zinc-500 h-full">
-              <button class="text-white border-b border-emerald-400 pb-[10px] translate-y-[11px]">Primary Analysis</button>
-              <button class="hover:text-zinc-300 transition h-full">Raw Data Dump</button>
-            </div>
-            <div class="flex gap-4">
-              <button class="text-zinc-500 hover:text-white transition"><i class="fa-regular fa-copy"></i></button>
-              <button class="text-zinc-500 hover:text-white transition"><i class="fa-solid fa-expand"></i></button>
-            </div>
-          </div>
-
-          <!-- Result Container -->
-          <div id="resultBox" class="flex-1 scroll-area p-8 lg:p-10 relative z-10 w-full h-full">
-            
-            <div id="resultContent" class="hidden">
-              <div id="result" class="result-content w-full max-w-4xl mx-auto"></div>
-            </div>
-
-            <!-- FIX #6: Professional structure icon (fa-diagram-project) instead of Hubspot -->
-            <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-zinc-600 z-0">
-               <i class="fa-solid fa-diagram-project text-5xl mb-5 opacity-20"></i>
-               <p class="text-sm font-medium tracking-wide">Awaiting initialization block...</p>
-            </div>
-          </div>
-        </div>
-
+      <div id="errorBanner" class="error-banner hidden">
+        <span>⚠</span>
+        <span id="errorMsg">An error occurred.</span>
       </div>
 
-    </main>
+      <div class="result-header">
+        <div class="result-meta">
+          <div class="result-meta-title" id="resultTitle">Research Memo</div>
+          <div class="result-meta-sub">
+            <span id="resultTimestamp"></span>
+            <span>•</span>
+            <span id="resultDuration"></span>
+            <span>•</span>
+            <span>5-Agent Analysis</span>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button class="result-action-btn" id="copyBtn" title="Copy to clipboard">⧉</button>
+          <button class="result-action-btn" id="expandBtn" title="Full screen">⛶</button>
+        </div>
+      </div>
+
+      <div class="result-body" id="resultBody"></div>
+
+      <button class="new-research-btn" id="newResearchBtn">
+        ← New Research
+      </button>
+    </section>
+
   </div>
 
 
-  <!-- ════════════ JAVASCRIPT LOGIC ════════════ -->
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer class="footer-bar">
+    <span>© 2026 Tailwind Agentic</span>
+    <span>Powered by CrewAI + Groq</span>
+    <span>Multi-agent deep research</span>
+  </footer>
+
+
+  <!-- ═══════════════ JAVASCRIPT ═══════════════ -->
   <script>
-    const form            = document.getElementById('agentForm');
-    const submitBtn       = document.getElementById('submitBtn');
-    const topicInput      = document.getElementById('topic');
-    const progressBar     = document.getElementById('progressBar');
-    const progressBarData = document.getElementById('progressBarData');
-    const agentFeed       = document.getElementById('agentFeed');
-    const resultBox       = document.getElementById('resultBox');
-    const result          = document.getElementById('result');
-    const resultContent   = document.getElementById('resultContent');
-    const emptyState      = document.getElementById('emptyState');
-    const elapsedEl       = document.getElementById('elapsed');
+    // ── DOM refs ──
+    const form         = document.getElementById('agentForm');
+    const submitBtn    = document.getElementById('submitBtn');
+    const topicInput   = document.getElementById('topic');
+    const inputState   = document.getElementById('inputState');
+    const thinkingState= document.getElementById('thinkingState');
+    const resultState  = document.getElementById('resultState');
+    const thinkingLabel= document.getElementById('thinkingLabel');
+    const thinkingSub  = document.getElementById('thinkingSublabel');
+    const thinkingTimer= document.getElementById('thinkingTimer');
+    const resultBody   = document.getElementById('resultBody');
+    const resultTitle  = document.getElementById('resultTitle');
+    const resultTs     = document.getElementById('resultTimestamp');
+    const resultDur    = document.getElementById('resultDuration');
+    const errorBanner  = document.getElementById('errorBanner');
+    const errorMsg     = document.getElementById('errorMsg');
+    const copyBtn      = document.getElementById('copyBtn');
+    const newResBtn    = document.getElementById('newResearchBtn');
 
     let timerInterval;
     let startTime;
+    let queryTopic = '';
 
+    // ── Thinking messages that cycle ──
+    const thinkingMessages = [
+      ['Scanning market universe…',          'Scout agent discovering candidates'],
+      ['Mapping structural catalysts…',       'Identifying sector tailwinds and momentum'],
+      ['Stress-testing risk vectors…',        'Evaluating downside scenarios'],
+      ['Sizing portfolio positions…',         'Constructing optimal allocation weights'],
+      ['Compiling research memo…',            'Validating and formatting final output'],
+      ['Deep analysis in progress…',          'Cross-referencing multiple data sources'],
+      ['Running scenario analysis…',          'Quantifying upside/downside distributions'],
+    ];
+    let msgIndex = 0;
+
+    // ── Timer ──
     function updateTimer() {
       const secs = Math.floor((Date.now() - startTime) / 1000);
       const m = String(Math.floor(secs / 60)).padStart(2, '0');
       const s = String(secs % 60).padStart(2, '0');
-      elapsedEl.textContent = `${m}:${s}`;
+      thinkingTimer.textContent = `${m}:${s}`;
     }
 
-    function updateNodeGrid(activeIdx) {
-      for (let i = 0; i < 5; i++) {
-        const ind = document.getElementById(`ind-${i}`);
-        if (i === activeIdx) {
-          ind.classList.add('active');
-          ind.classList.replace('text-zinc-700', 'text-teal-400');
-          ind.nextElementSibling.querySelector('span:first-child').classList.add('text-teal-400');
-        } else if (i < activeIdx) {
-          ind.classList.remove('active');
-          ind.classList.replace('text-zinc-700', 'text-emerald-700'); 
-          ind.classList.replace('text-teal-400', 'text-emerald-700'); 
-          ind.nextElementSibling.querySelector('span:first-child').classList.remove('text-teal-400');
-        } else {
-          ind.classList.remove('active');
-          ind.className = 'fa-solid fa-circle text-[8px] text-zinc-700 node-indicator';
-        }
-      }
+    // ── State transitions ──
+    function showState(state) {
+      inputState.classList.toggle('hidden', state !== 'input');
+      thinkingState.classList.toggle('hidden', state !== 'thinking');
+      resultState.classList.toggle('hidden', state !== 'result');
     }
 
-    function resetNodeGrid() {
-      for (let i = 0; i < 5; i++) {
-        const ind = document.getElementById(`ind-${i}`);
-        ind.className = 'fa-solid fa-circle text-[8px] text-zinc-700 node-indicator';
-        ind.nextElementSibling.querySelector('span:first-child').classList.remove('text-teal-400');
-      }
-    }
+    // ── Hint chip clicks ──
+    document.querySelectorAll('.hint-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        topicInput.value = chip.dataset.query;
+        topicInput.focus();
+      });
+    });
 
-    // FIX #3: Dimmed the Tag Prefix to zinc-600, highlighted Payload to white
-    function appendTerminalLine(msg, agentIdx) {
-      const names = ["SYS.SCOUT", "SYS.CATALYST", "SYS.RISK", "SYS.EVAL", "SYS.REPORT"];
-      const prefix = agentIdx >= 0 && agentIdx < 5 ? `[${names[agentIdx]}]` : `[SYSTEM]`;
-      
-      const line = document.createElement('div');
-      line.className = 'flex gap-2 log-line pb-2 mt-1';
-      
-      const pSpan = document.createElement('span');
-      pSpan.className = 'text-zinc-600 font-bold shrink-0 min-w-[75px] text-[10px] pt-[2px]';
-      pSpan.textContent = prefix;
+    // ── New research ──
+    newResBtn.addEventListener('click', () => {
+      showState('input');
+      topicInput.value = '';
+      resultBody.innerHTML = '';
+      errorBanner.classList.add('hidden');
+      topicInput.focus();
+    });
 
-      const mSpan = document.createElement('span');
-      mSpan.className = 'text-white text-[11px] leading-snug break-words';
-      mSpan.textContent = msg;
+    // ── Copy result ──
+    copyBtn.addEventListener('click', () => {
+      const text = resultBody.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtn.textContent = '✓';
+        setTimeout(() => copyBtn.textContent = '⧉', 1500);
+      });
+    });
 
-      line.appendChild(pSpan);
-      line.appendChild(mSpan);
-      agentFeed.appendChild(line);
-
-      // Lock to 8 lines to prevent massive overflow, auto-scroll bottom
-      while (agentFeed.children.length > 8) {
-        agentFeed.removeChild(agentFeed.firstChild);
-      }
-      agentFeed.parentElement.scrollTop = agentFeed.parentElement.scrollHeight;
-    }
-
+    // ── Main form submit ──
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const topic = topicInput.value.trim();
-      if (!topic) return;
+      queryTopic = topicInput.value.trim();
+      if (!queryTopic) return;
 
+      // Switch to thinking state
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
-      topicInput.disabled = true;
+      showState('thinking');
+      errorBanner.classList.add('hidden');
 
-      emptyState.classList.add('hidden');
-      resultContent.classList.add('hidden');
-      result.innerHTML = '';
-      agentFeed.innerHTML = ''; 
-      
-      progressBar.style.width = '0%';
-      progressBarData.textContent = '0%';
-      // Bug #5 fix: Reset progress bar color after a previous failure
-      progressBar.classList.replace('from-rose-600', 'from-teal-500');
-      progressBar.classList.replace('to-red-500', 'to-emerald-400');
-      resetNodeGrid();
-
+      // Start timer
       startTime = Date.now();
       clearInterval(timerInterval);
       timerInterval = setInterval(updateTimer, 1000);
       updateTimer();
 
+      // Cycle thinking messages
+      msgIndex = 0;
+      thinkingLabel.textContent = thinkingMessages[0][0];
+      thinkingSub.textContent = thinkingMessages[0][1];
+      const msgTimer = setInterval(() => {
+        msgIndex = (msgIndex + 1) % thinkingMessages.length;
+        thinkingLabel.textContent = thinkingMessages[msgIndex][0];
+        thinkingSub.textContent = thinkingMessages[msgIndex][1];
+      }, 6000);
+
       try {
-        appendTerminalLine('Dispatching agentic routine...', -1);
         const res = await fetch('/run', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic })
+          body: JSON.stringify({ topic: queryTopic })
         });
-        
-        if (!res.ok) throw new Error("HTTP " + res.status);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         const { job_id: jobId } = await res.json();
-        let lastReportedProg = -1;
 
-        let pollErrors = 0; // Bug #7 fix: track consecutive poll failures
+        let pollErrors = 0;
         const poll = setInterval(async () => {
           try {
-            const statusRes = await fetch(`/status/${jobId}`);
-            const data = await statusRes.json();
-            pollErrors = 0; // Reset on success
+            const sr = await fetch(`/status/${jobId}`);
+            const data = await sr.json();
+            pollErrors = 0;
 
-            if (data.status === 'running') {
-              progressBar.style.width = data.progress + '%';
-              progressBarData.textContent = data.progress + '%';
-              
-              const idx = (data.agent_index !== undefined) ? data.agent_index : Math.min(Math.floor(data.progress / 20), 4);
-              updateNodeGrid(idx);
-
-              if (data.progress > lastReportedProg) {
-                appendTerminalLine(data.message || 'Fetching sequence block...', idx);
-                lastReportedProg = data.progress;
-              }
-            } 
-            else if (data.status === 'completed') {
+            if (data.status === 'completed') {
               clearInterval(poll);
               clearInterval(timerInterval);
-              
-              progressBar.style.width = '100%';
-              progressBarData.textContent = '100%';
-              // Bug #6 fix: Mark all 5 nodes as completed instead of OOB index
-              for (let i = 0; i < 5; i++) {
-                const ind = document.getElementById(`ind-${i}`);
-                ind.classList.remove('active');
-                ind.className = 'fa-solid fa-circle text-[8px] text-emerald-400 node-indicator';
-                ind.nextElementSibling.querySelector('span:first-child').classList.remove('text-teal-400');
-              }
-              appendTerminalLine('Output payload delivered.', -1);
-
-              submitBtn.disabled = false;
-              topicInput.disabled = false;
-              submitBtn.innerHTML = '<i class="fa-solid fa-bolt"></i><span>Execute</span>';
-              topicInput.value = '';
-
-              resultContent.classList.remove('hidden');
-              result.innerHTML = marked.parse(data.result);
-              resultBox.scrollTop = 0;
-            } 
+              clearInterval(msgTimer);
+              showResult(data.result, false);
+            }
             else if (data.status === 'failed') {
               clearInterval(poll);
               clearInterval(timerInterval);
-              
-              progressBar.classList.replace('from-teal-500', 'from-rose-600');
-              progressBar.classList.replace('to-emerald-400', 'to-red-500');
-              
-              appendTerminalLine('Process failed: ' + (data.message || 'Unknown'), -1);
-
-              submitBtn.disabled = false;
-              topicInput.disabled = false;
-              submitBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i><span>Retry</span>';
-              
-              if (data.result) {
-                resultContent.classList.remove('hidden');
-                result.innerHTML = marked.parse(data.result);
-              } else {
-                emptyState.classList.remove('hidden');
-                emptyState.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-rose-500 text-5xl mb-4"></i><p>Execution halted.</p>';
-              }
+              clearInterval(msgTimer);
+              showResult(data.result || '', true, data.message || 'Analysis failed');
             }
-          } catch(err) {
+          } catch (err) {
             pollErrors++;
             if (pollErrors >= 5) {
               clearInterval(poll);
               clearInterval(timerInterval);
-              appendTerminalLine('Lost connection to server after 5 retries.', -1);
-              submitBtn.disabled = false;
-              topicInput.disabled = false;
-              submitBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i><span>Retry</span>';
-              emptyState.classList.remove('hidden');
-              emptyState.innerHTML = '<i class="fa-solid fa-plug-circle-xmark text-rose-500 text-5xl mb-4"></i><p>Connection lost.</p>';
+              clearInterval(msgTimer);
+              showResult('', true, 'Lost connection to server');
             }
           }
-        }, 2000); 
+        }, 2000);
 
       } catch (err) {
         clearInterval(timerInterval);
-        appendTerminalLine('Connection rejected at node.', -1);
-        
-        submitBtn.disabled = false;
-        topicInput.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i><span>Retry</span>';
-        
-        emptyState.classList.remove('hidden');
-        emptyState.innerHTML = '<i class="fa-solid fa-plug-circle-xmark text-rose-500 text-5xl mb-4"></i><p>Offline.</p>';
+        clearInterval(msgTimer);
+        showResult('', true, 'Could not connect to the server');
       }
     });
 
+
+    // ── Show Result ──
+    function showResult(content, isError, errorMessage) {
+      submitBtn.disabled = false;
+
+      // Duration
+      const totalSecs = Math.floor((Date.now() - startTime) / 1000);
+      const durMin = Math.floor(totalSecs / 60);
+      const durSec = totalSecs % 60;
+      const durStr = durMin > 0 ? `${durMin}m ${durSec}s` : `${durSec}s`;
+
+      // Timestamp
+      const now = new Date();
+      const timeStr = now.toLocaleString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+
+      resultTitle.textContent = queryTopic;
+      resultTs.textContent = timeStr;
+      resultDur.textContent = durStr;
+
+      if (isError) {
+        errorBanner.classList.remove('hidden');
+        errorMsg.textContent = errorMessage;
+      } else {
+        errorBanner.classList.add('hidden');
+      }
+
+      if (content) {
+        resultBody.innerHTML = marked.parse(content);
+      } else {
+        resultBody.innerHTML = '<p style="color:var(--text-tertiary)">No output was produced.</p>';
+      }
+
+      showState('result');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   </script>
+
 </body>
 </html>
