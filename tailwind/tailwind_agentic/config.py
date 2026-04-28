@@ -8,7 +8,10 @@ load_dotenv(dotenv_path=Path(__file__).resolve().parent.parent / ".env")
 # Powers ALL 5 agents.
 # groq/llama-3.1-8b-instant is the replacement for the deprecated llama3-8b-8192.
 # Needs GROQ_API_KEY set in .env (get one free at https://console.groq.com)
+# IMPORTANT: Upgrade to Groq Dev Tier (free) at console.groq.com/settings/billing
+# to avoid the 6,000 TPM rate limit on the free tier.
 llm = LLM(
     model="groq/llama-3.1-8b-instant",
     temperature=0.3,   # Low = more consistent, factual answers
+    max_retries=5,     # Retry on rate limits — waits automatically
 )
